@@ -1,0 +1,17 @@
+{
+  "name": "プリズム合成計算",
+  "short_name": "プリズム合成",
+  "description": "2方向のプリズムをベクトル合成する眼科向け計算ツール",
+  "lang": "ja",
+  "start_url": "/#/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f3f7fc",
+  "theme_color": "#2563eb",
+  "icons": [
+    { "src": "/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/icon-maskable.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

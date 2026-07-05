@@ -1,0 +1,22 @@
+# Dependencies and local caches
+node_modules/
+.npm-cache/
+
+# Build and test output
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local QA artifacts
+qa-*.png
+
+# Editors and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment variables
+.env
+.env.*
+!.env.example
