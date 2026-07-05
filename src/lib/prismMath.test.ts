@@ -2,30 +2,30 @@ import { describe, expect, it } from 'vitest'
 import { angleForEye, calculatePrisms, DEFAULT_ANGLES, normalizeAngle, toVector } from './prismMath'
 
 describe('prismMath', () => {
-  it('3△ BO + 4△ BU を5△・53.13°に合成する', () => {
+  it('検者視点の右眼で3△ BO + 4△ BUを5△・126.87°に合成する', () => {
     const result = calculatePrisms(
       [{ magnitude: 3, direction: 'BO' }, { magnitude: 4, direction: 'BU' }],
       'right',
       DEFAULT_ANGLES,
       'sample-1',
     )
-    expect(result.totalX).toBeCloseTo(3)
+    expect(result.totalX).toBeCloseTo(-3)
     expect(result.totalY).toBeCloseTo(4)
     expect(result.resultMagnitude).toBeCloseTo(5)
-    expect(result.resultAngle).toBeCloseTo(53.1301)
+    expect(result.resultAngle).toBeCloseTo(126.8699)
   })
 
-  it('5△ BU + 3△ BI を約5.83△・120.96°に合成する', () => {
+  it('検者視点の右眼で5△ BU + 3△ BIを約5.83△・59.04°に合成する', () => {
     const result = calculatePrisms(
       [{ magnitude: 5, direction: 'BU' }, { magnitude: 3, direction: 'BI' }],
       'right',
       DEFAULT_ANGLES,
       'sample-2',
     )
-    expect(result.totalX).toBeCloseTo(-3)
+    expect(result.totalX).toBeCloseTo(3)
     expect(result.totalY).toBeCloseTo(5)
     expect(result.resultMagnitude).toBeCloseTo(Math.sqrt(34))
-    expect(result.resultAngle).toBeCloseTo(120.9637)
+    expect(result.resultAngle).toBeCloseTo(59.0363)
   })
 
   it('角度を0〜360°に正規化する', () => {
@@ -53,13 +53,14 @@ describe('prismMath', () => {
   })
 
   it('左眼ではBIとBOを左右反転する', () => {
-    expect(angleForEye('BO', 'right', DEFAULT_ANGLES)).toBe(0)
-    expect(angleForEye('BO', 'left', DEFAULT_ANGLES)).toBe(180)
-    expect(angleForEye('BI', 'left', DEFAULT_ANGLES)).toBe(0)
+    expect(angleForEye('BO', 'right', DEFAULT_ANGLES)).toBe(180)
+    expect(angleForEye('BO', 'left', DEFAULT_ANGLES)).toBe(0)
+    expect(angleForEye('BI', 'right', DEFAULT_ANGLES)).toBe(0)
+    expect(angleForEye('BI', 'left', DEFAULT_ANGLES)).toBe(180)
     expect(angleForEye('BU', 'left', DEFAULT_ANGLES)).toBe(90)
   })
 
   it('変更した角度設定も左眼へ反映する', () => {
-    expect(angleForEye('BO', 'left', { ...DEFAULT_ANGLES, BO: 15 })).toBe(165)
+    expect(angleForEye('BO', 'left', { ...DEFAULT_ANGLES, BO: 165 })).toBe(15)
   })
 })

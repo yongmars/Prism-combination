@@ -1,7 +1,9 @@
 import type { AppSettings, CalculationRecord } from '../types'
 import { DEFAULT_ANGLES } from './prismMath'
 
-const SETTINGS_KEY = 'prism-combination:settings:v1'
+// v2で座標系を「検者が患者を正面から見た向き」に統一しました。
+// 旧版の逆向きBI/BO設定を誤って引き継がないよう、保存キーを更新します。
+const SETTINGS_KEY = 'prism-combination:settings:v2'
 const HISTORY_KEY = 'prism-combination:history:v1'
 const CURRENT_KEY = 'prism-combination:current:v1'
 

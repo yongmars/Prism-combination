@@ -64,7 +64,7 @@ function ComponentTable({ current, decimals }: { current: NonNullable<ReturnType
   return (
     <div className="table-scroll">
       <table>
-        <thead><tr><th /><th>x成分（右+）</th><th>y成分（上+）</th></tr></thead>
+        <thead><tr><th /><th>x成分（検者右+）</th><th>y成分（上+）</th></tr></thead>
         <tbody>
           <tr><th>プリズム①</th><td>{formatNumber(current.vectors[0].x, decimals, true)}</td><td>{formatNumber(current.vectors[0].y, decimals, true)}</td></tr>
           <tr><th>プリズム②</th><td>{formatNumber(current.vectors[1].x, decimals, true)}</td><td>{formatNumber(current.vectors[1].y, decimals, true)}</td></tr>

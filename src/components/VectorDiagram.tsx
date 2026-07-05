@@ -16,8 +16,9 @@ export function VectorDiagram({ record, decimals }: Props) {
     { x: center + vectors[1].x * scale, y: center - vectors[1].y * scale, color: '#16a34a', marker: 'green', label: `P2 ${formatNumber(vectors[1].magnitude, decimals)}△` },
     { x: center + record.totalX * scale, y: center - record.totalY * scale, color: '#dc2626', marker: 'red', label: `合成 ${formatNumber(resultMagnitude, decimals)}△` },
   ]
-  const rightLabel = eye === 'right' ? 'Out' : 'In'
-  const leftLabel = eye === 'right' ? 'In' : 'Out'
+  // 検者が患者を正面から見るため、右眼では検者右が鼻側（In）になります。
+  const rightLabel = eye === 'right' ? 'In' : 'Out'
+  const leftLabel = eye === 'right' ? 'Out' : 'In'
 
   return (
     <div className="vector-wrap">

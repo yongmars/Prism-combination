@@ -47,6 +47,10 @@ export function SettingsPage() {
 
   return (
     <div className="page settings-page">
+      <div className="coordinate-notice" role="note">
+        <strong>検者が患者を正面から見た座標系を使用しています</strong>
+        <span>0°＝検者の右、90°＝上、180°＝検者の左、270°＝下</span>
+      </div>
       <section className="card settings-section">
         <h2>基底方向の角度対応</h2>
         <p>右眼を基準に設定します。左眼は左右反転して自動計算されます。</p>
@@ -61,8 +65,8 @@ export function SettingsPage() {
           ))}
         </div>
         <div className="mapping-note">
-          <strong>患者基準の座標</strong>
-          <span>0°：画面右　90°：上　180°：画面左　270°：下</span>
+          <strong>検者基準の座標</strong>
+          <span>0°：検者の右　90°：上　180°：検者の左　270°：下</span>
         </div>
       </section>
 

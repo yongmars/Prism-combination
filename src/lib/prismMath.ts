@@ -7,7 +7,9 @@ import type {
   PrismVector,
 } from '../types'
 
-export const DEFAULT_ANGLES: AngleSettings = { BO: 0, BU: 90, BI: 180, BD: 270 }
+// 検者が患者を正面から見た座標。0°は検者の右、180°は検者の左です。
+// 右眼の耳側（BO）は検者から見て左、鼻側（BI）は右になります。
+export const DEFAULT_ANGLES: AngleSettings = { BO: 180, BU: 90, BI: 0, BD: 270 }
 const ZERO_EPSILON = 1e-10
 
 /** 角度を0度以上360度未満にそろえます。360度は0度として扱います。 */
@@ -16,7 +18,7 @@ export function normalizeAngle(angle: number): number {
 }
 
 /**
- * 右眼を基準に保存した方向を、選択眼の患者基準角度へ変換します。
+ * 右眼を基準に保存した方向を、選択眼の検者基準角度へ変換します。
  * 左眼は垂直軸を中心に鏡映するため 180° - θ となり、BU/BDは変わらず
  * BO/BIの左右だけが入れ替わります。
  */
