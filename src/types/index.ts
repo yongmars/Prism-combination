@@ -46,3 +46,25 @@ export interface DraftPrismInput {
   direction: DirectionMode
   customAngle: string
 }
+
+export interface PrismComponentPart {
+  magnitude: number
+  direction: BaseDirection | null
+}
+
+export interface SplitEyePrescription {
+  eye: EyeSide
+  magnitude: number
+  angle: number | null
+  vector: PrismVector
+  horizontal: PrismComponentPart
+  vertical: PrismComponentPart
+}
+
+export interface PrismSplitResult {
+  sourceEye: EyeSide
+  sourceShare: number
+  fellowShare: number
+  right: SplitEyePrescription
+  left: SplitEyePrescription
+}

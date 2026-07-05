@@ -37,4 +37,17 @@ describe('CalculatorPage', () => {
     expect(await screen.findByText('5.00', { exact: true })).toBeInTheDocument()
     expect(screen.getByText('126.87°')).toBeInTheDocument()
   })
+
+  it('左右分割モードで10△・300°を50:50に分割する', async () => {
+    const user = userEvent.setup()
+    renderApp()
+    await user.click(screen.getByRole('tab', { name: '左右分割' }))
+    await user.click(screen.getByRole('button', { name: '左右眼に分割する' }))
+    expect(screen.getByText('300.00°')).toBeInTheDocument()
+    expect(screen.getByText('120.00°')).toBeInTheDocument()
+    expect(screen.getAllByText('5.00△')).toHaveLength(2)
+    expect(screen.getAllByText('2.50△ BI（鼻側）')).toHaveLength(2)
+    expect(screen.getByText('4.33△ BD（下方）')).toBeInTheDocument()
+    expect(screen.getByText('4.33△ BU（上方）')).toBeInTheDocument()
+  })
 })
