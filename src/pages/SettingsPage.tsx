@@ -1,6 +1,7 @@
-import { RotateCcw, Save } from 'lucide-react'
+import { ExternalLink, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { CREATOR_URL } from '../constants/app'
 import { angleForEye, normalizeAngle } from '../lib/prismMath'
 import type { BaseDirection, DecimalPlaces } from '../types'
 
@@ -73,7 +74,7 @@ export function SettingsPage() {
       <section className="card settings-section">
         <h2>小数点表示桁数</h2>
         <div className="decimal-options" role="radiogroup" aria-label="小数点表示桁数">
-          {([1, 2, 3] as DecimalPlaces[]).map((value) => (
+          {([1, 2] as DecimalPlaces[]).map((value) => (
             <button type="button" role="radio" aria-checked={decimals === value} className={decimals === value ? 'active' : ''} key={value} onClick={() => setDecimals(value)}>{value}桁<br /><small>{(5.83).toFixed(value)}</small></button>
           ))}
         </div>
@@ -85,6 +86,21 @@ export function SettingsPage() {
         <button type="button" className="secondary-button" onClick={reset}><RotateCcw size={18} />既定値に戻す</button>
         <button type="button" className="primary-button" onClick={save}><Save size={18} />保存する</button>
       </div>
+      <footer className="settings-about">
+        <div className="creator-line">
+          <span>作った人：</span>
+          <a href={CREATOR_URL} target="_blank" rel="noreferrer">視能訓練士 ゆうまるす <ExternalLink aria-hidden="true" /></a>
+        </div>
+        <section className="disclaimer" aria-labelledby="disclaimer-title">
+          <h2 id="disclaimer-title">【免責事項】</h2>
+          <ul>
+            <li>本アプリはプリズム計算をサポートする補助ツールであり、<br />医療機器ではありません。</li>
+            <li>表示される計算結果は参考値です。<br />実際の検査・処方では、必ず専門職が確認してください。</li>
+            <li>左右眼の基底方向の扱いは、設定内容と臨床状況を確認して使用してください。</li>
+            <li>本アプリの利用によって生じたトラブルについて、<br />開発者は一切の責任を負いかねます。</li>
+          </ul>
+        </section>
+      </footer>
     </div>
   )
 }

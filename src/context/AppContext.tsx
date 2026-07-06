@@ -1,14 +1,14 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
-import type { AppSettings, CalculationRecord } from '../types'
+import type { AppCalculationRecord, AppSettings } from '../types'
 import { DEFAULT_SETTINGS, storage } from '../lib/storage'
 
 interface AppContextValue {
   settings: AppSettings
-  current: CalculationRecord | null
-  history: CalculationRecord[]
-  setCurrent: (record: CalculationRecord | null) => void
+  current: AppCalculationRecord | null
+  history: AppCalculationRecord[]
+  setCurrent: (record: AppCalculationRecord | null) => void
   saveCurrent: () => void
-  openHistoryItem: (record: CalculationRecord) => void
+  openHistoryItem: (record: AppCalculationRecord) => void
   deleteHistoryItem: (id: string) => void
   clearHistory: () => void
   updateSettings: (settings: AppSettings) => void
@@ -22,7 +22,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [current, setCurrentState] = useState(storage.loadCurrent)
   const [history, setHistory] = useState(storage.loadHistory)
 
-  const setCurrent = (record: CalculationRecord | null) => {
+  const setCurrent = (record: AppCalculationRecord | null) => {
     setCurrentState(record)
     storage.saveCurrent(record)
   }
@@ -37,7 +37,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     storage.saveHistory(next)
   }
 
-  const openHistoryItem = (record: CalculationRecord) => setCurrent(record)
+  const openHistoryItem = (record: AppCalculationRecord) => setCurrent(record)
 
   const deleteHistoryItem = (id: string) => {
     const next = history.filter((item) => item.id !== id)

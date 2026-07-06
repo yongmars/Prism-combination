@@ -4,6 +4,7 @@ import type {
   EyeSide,
   PrismComponentPart,
   PrismSplitResult,
+  SplitCalculationRecord,
   SplitEyePrescription,
 } from '../types'
 import { angleForEye, circularDistance, normalizeAngle, toVector } from './prismMath'
@@ -87,5 +88,24 @@ export function splitPrismPrescription(
     fellowShare,
     right: sourceEye === 'right' ? sourcePrescription : fellowPrescription,
     left: sourceEye === 'left' ? sourcePrescription : fellowPrescription,
+  }
+}
+
+export function createSplitCalculation(
+  sourceEye: EyeSide,
+  magnitude: number,
+  angle: number,
+  sourceShare: number,
+  settings: AngleSettings,
+  id: string = crypto.randomUUID(),
+): SplitCalculationRecord {
+  return {
+    kind: 'split',
+    id,
+    originalMagnitude: magnitude,
+    originalAngle: normalizeAngle(angle),
+    createdAt: new Date().toISOString(),
+    saved: false,
+    ...splitPrismPrescription(sourceEye, magnitude, angle, sourceShare, settings),
   }
 }

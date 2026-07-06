@@ -1,7 +1,7 @@
 export type EyeSide = 'right' | 'left'
 export type BaseDirection = 'BO' | 'BU' | 'BI' | 'BD'
 export type DirectionMode = BaseDirection | 'angle'
-export type DecimalPlaces = 1 | 2 | 3
+export type DecimalPlaces = 1 | 2
 
 export interface PrismInput {
   magnitude: number
@@ -29,6 +29,7 @@ export interface AppSettings {
 }
 
 export interface CalculationRecord {
+  kind: 'combine'
   id: string
   eye: EyeSide
   inputs: [PrismInput, PrismInput]
@@ -68,3 +69,14 @@ export interface PrismSplitResult {
   right: SplitEyePrescription
   left: SplitEyePrescription
 }
+
+export interface SplitCalculationRecord extends PrismSplitResult {
+  kind: 'split'
+  id: string
+  originalMagnitude: number
+  originalAngle: number
+  createdAt: string
+  saved: boolean
+}
+
+export type AppCalculationRecord = CalculationRecord | SplitCalculationRecord

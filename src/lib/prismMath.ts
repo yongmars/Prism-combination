@@ -81,6 +81,7 @@ export function calculatePrisms(
       : normalizeAngle((Math.atan2(totalY, totalX) * 180) / Math.PI)
 
   return {
+    kind: 'combine',
     id,
     eye,
     inputs,
