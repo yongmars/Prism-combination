@@ -53,6 +53,18 @@ export interface PrismComponentPart {
   direction: BaseDirection | null
 }
 
+export interface DecomposeCalculationRecord {
+  kind: 'decompose'
+  id: string
+  eye: EyeSide
+  input: PrismInput
+  vector: PrismVector
+  horizontal: PrismComponentPart
+  vertical: PrismComponentPart
+  createdAt: string
+  saved: boolean
+}
+
 export interface SplitEyePrescription {
   eye: EyeSide
   magnitude: number
@@ -79,4 +91,4 @@ export interface SplitCalculationRecord extends PrismSplitResult {
   saved: boolean
 }
 
-export type AppCalculationRecord = CalculationRecord | SplitCalculationRecord
+export type AppCalculationRecord = CalculationRecord | DecomposeCalculationRecord | SplitCalculationRecord

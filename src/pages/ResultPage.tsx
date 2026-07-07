@@ -1,9 +1,9 @@
-import { ArrowRightLeft, CheckCircle2, ChevronRight, Save } from 'lucide-react'
+import { ArrowRightLeft, CheckCircle2, ChevronRight, CornerUpRight, Save } from 'lucide-react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { SplitResultCards } from '../components/SplitResultCards'
 import { useApp } from '../context/AppContext'
 import { describeAngle, DIRECTION_NAMES, formatNumber } from '../lib/prismMath'
-import type { CalculationRecord, SplitCalculationRecord } from '../types'
+import type { CalculationRecord, DecomposeCalculationRecord, PrismComponentPart, SplitCalculationRecord } from '../types'
 
 export function ResultPage() {
   const { current, settings, saveCurrent } = useApp()
@@ -12,7 +12,23 @@ export function ResultPage() {
 
   return current.kind === 'split'
     ? <SplitResultPage current={current} decimals={settings.decimals} saveCurrent={saveCurrent} navigate={navigate} />
-    : <CombineResultPage current={current} decimals={settings.decimals} angles={settings.angles} saveCurrent={saveCurrent} navigate={navigate} />
+    : current.kind === 'decompose'
+      ? <DecomposeResultPage current={current} decimals={settings.decimals} saveCurrent={saveCurrent} navigate={navigate} />
+      : <CombineResultPage current={current} decimals={settings.decimals} angles={settings.angles} saveCurrent={saveCurrent} navigate={navigate} />
+}
+
+function componentText(part: PrismComponentPart, decimals: number): string {
+  return part.direction ? `${formatNumber(part.magnitude, decimals)}△ ${part.direction}（${DIRECTION_NAMES[part.direction].ja}）` : `${formatNumber(0, decimals)}△`
+}
+
+function ComponentPrescription({ part, decimals }: { part: PrismComponentPart; decimals: number }) {
+  if (!part.direction) return <strong>{formatNumber(0, decimals)}△</strong>
+  return (
+    <strong className="component-prescription">
+      <span>{formatNumber(part.magnitude, decimals)}△ {part.direction}</span>
+      <small>（{DIRECTION_NAMES[part.direction].ja}）</small>
+    </strong>
+  )
 }
 
 function CombineResultPage({ current, decimals, angles, saveCurrent, navigate }: { current: CalculationRecord; decimals: number; angles: Parameters<typeof describeAngle>[2]; saveCurrent: () => void; navigate: ReturnType<typeof useNavigate> }) {
@@ -35,6 +51,36 @@ function CombineResultPage({ current, decimals, angles, saveCurrent, navigate }:
         <button type="button" className="detail-button" onClick={() => navigate('/details')}>詳細を見る<ChevronRight /></button>
       </section>
       <section className="card input-summary"><h2>入力したプリズム</h2><p><span className="number-dot number-dot--blue">1</span>{inputLabel(0)}</p><p><span className="number-dot number-dot--green">2</span>{inputLabel(1)}</p></section>
+      <ResultActions saved={current.saved} saveCurrent={saveCurrent} navigate={navigate} />
+    </div>
+  )
+}
+
+function DecomposeResultPage({ current, decimals, saveCurrent, navigate }: { current: DecomposeCalculationRecord; decimals: number; saveCurrent: () => void; navigate: ReturnType<typeof useNavigate> }) {
+  const inputDirection = current.input.direction === 'angle' ? `${formatNumber(current.vector.angle, decimals)}°` : current.input.direction
+  return (
+    <div className="page result-page decompose-result-page">
+      <div className="success-message"><CheckCircle2 />成分分解が完了しました</div>
+      <section className="card split-result-summary">
+        <div className="split-summary-title"><CornerUpRight /><div><h2>水平・垂直成分</h2><p>{current.eye === 'right' ? '右眼' : '左眼'} {formatNumber(current.input.magnitude, decimals)}△ {inputDirection}</p></div></div>
+        <div className="eye-result-grid">
+          <article className="eye-result-card">
+            <div className="eye-result-title"><h3>水平成分</h3><span>x成分</span></div>
+            <div className="eye-prescription"><ComponentPrescription part={current.horizontal} decimals={decimals} /><b>{formatNumber(current.vector.x, decimals, true)}</b></div>
+          </article>
+          <article className="eye-result-card eye-result-card--left">
+            <div className="eye-result-title"><h3>垂直成分</h3><span>y成分</span></div>
+            <div className="eye-prescription"><ComponentPrescription part={current.vertical} decimals={decimals} /><b>{formatNumber(current.vector.y, decimals, true)}</b></div>
+          </article>
+        </div>
+        <button type="button" className="detail-button" onClick={() => navigate('/details')}>詳細を見る<ChevronRight /></button>
+      </section>
+      <section className="card input-summary">
+        <h2>入力された合成プリズム</h2>
+        <p><span className="eye-badge">{current.eye === 'right' ? '右眼' : '左眼'}</span>{formatNumber(current.input.magnitude, decimals)}△　{formatNumber(current.vector.angle, decimals)}°</p>
+        <p><span className="number-dot number-dot--blue">x</span>{formatNumber(current.vector.x, decimals, true)}</p>
+        <p><span className="number-dot number-dot--green">y</span>{formatNumber(current.vector.y, decimals, true)}</p>
+      </section>
       <ResultActions saved={current.saved} saveCurrent={saveCurrent} navigate={navigate} />
     </div>
   )

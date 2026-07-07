@@ -22,6 +22,7 @@ function normalizeRecord(value: unknown): AppCalculationRecord | null {
   if (!value || typeof value !== 'object') return null
   const record = value as Record<string, unknown>
   if (record.kind === 'split') return value as AppCalculationRecord
+  if (record.kind === 'decompose') return value as AppCalculationRecord
   // v1の合成履歴にはkindがないため、読み込み時に後方互換変換します。
   if (Array.isArray(record.inputs) && Array.isArray(record.vectors)) {
     return { ...(value as CalculationRecord), kind: 'combine' }

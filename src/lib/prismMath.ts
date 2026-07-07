@@ -2,7 +2,9 @@ import type {
   AngleSettings,
   BaseDirection,
   CalculationRecord,
+  DecomposeCalculationRecord,
   EyeSide,
+  PrismComponentPart,
   PrismInput,
   PrismVector,
 } from '../types'
@@ -92,6 +94,65 @@ export function calculatePrisms(
     resultAngle,
     createdAt: new Date().toISOString(),
     saved: false,
+  }
+}
+
+export function closestComponentDirection(
+  componentAngle: number,
+  candidates: [BaseDirection, BaseDirection],
+  eye: EyeSide,
+  settings: AngleSettings,
+): BaseDirection {
+  return candidates.reduce((best, direction) =>
+    circularDistance(componentAngle, angleForEye(direction, eye, settings)) <
+    circularDistance(componentAngle, angleForEye(best, eye, settings))
+      ? direction
+      : best,
+  )
+}
+
+export function componentFromAxisValue(
+  value: number,
+  positiveAngle: number,
+  negativeAngle: number,
+  candidates: [BaseDirection, BaseDirection],
+  eye: EyeSide,
+  settings: AngleSettings,
+): PrismComponentPart {
+  if (Math.abs(value) < ZERO_EPSILON) return { magnitude: 0, direction: null }
+  return {
+    magnitude: Math.abs(value),
+    direction: closestComponentDirection(value > 0 ? positiveAngle : negativeAngle, candidates, eye, settings),
+  }
+}
+
+export function decomposePrism(
+  input: PrismInput,
+  eye: EyeSide,
+  settings: AngleSettings,
+) {
+  const vector = toVector(input.magnitude, resolveInputAngle(input, eye, settings))
+  return {
+    vector,
+    horizontal: componentFromAxisValue(vector.x, 0, 180, ['BO', 'BI'], eye, settings),
+    vertical: componentFromAxisValue(vector.y, 90, 270, ['BU', 'BD'], eye, settings),
+  }
+}
+
+export function createDecomposeCalculation(
+  input: PrismInput,
+  eye: EyeSide,
+  settings: AngleSettings,
+  id: string = crypto.randomUUID(),
+): DecomposeCalculationRecord {
+  return {
+    kind: 'decompose',
+    id,
+    eye,
+    input,
+    createdAt: new Date().toISOString(),
+    saved: false,
+    ...decomposePrism(input, eye, settings),
   }
 }
 

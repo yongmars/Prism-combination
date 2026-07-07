@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { angleForEye, calculatePrisms, DEFAULT_ANGLES, normalizeAngle, toVector } from './prismMath'
+import { angleForEye, calculatePrisms, createDecomposeCalculation, DEFAULT_ANGLES, decomposePrism, normalizeAngle, toVector } from './prismMath'
 
 describe('prismMath', () => {
   it('検者視点の右眼で3△ BO + 4△ BUを5△・126.87°に合成する', () => {
@@ -62,5 +62,28 @@ describe('prismMath', () => {
 
   it('変更した角度設定も左眼へ反映する', () => {
     expect(angleForEye('BO', 'left', { ...DEFAULT_ANGLES, BO: 165 })).toBe(15)
+  })
+  it('右眼10△ 300°を水平BI・垂直BDへ成分分解する', () => {
+    const result = createDecomposeCalculation({ magnitude: 10, direction: 'angle', customAngle: 300 }, 'right', DEFAULT_ANGLES, 'decompose-1')
+    expect(result.vector.x).toBeCloseTo(5)
+    expect(result.vector.y).toBeCloseTo(-8.6602)
+    expect(result.horizontal.magnitude).toBeCloseTo(5)
+    expect(result.horizontal.direction).toBe('BI')
+    expect(result.vertical.magnitude).toBeCloseTo(8.6602)
+    expect(result.vertical.direction).toBe('BD')
+  })
+
+  it('左眼では水平成分のBI/BO表示が既存設定どおり反転する', () => {
+    const result = createDecomposeCalculation({ magnitude: 10, direction: 'angle', customAngle: 0 }, 'left', DEFAULT_ANGLES, 'decompose-left')
+    expect(result.vector.x).toBeCloseTo(10)
+    expect(result.horizontal.direction).toBe('BO')
+  })
+
+  it('方向ボタン入力でも角度指定と同じ成分になる', () => {
+    const fromButton = decomposePrism({ magnitude: 4, direction: 'BU' }, 'right', DEFAULT_ANGLES)
+    const fromAngle = decomposePrism({ magnitude: 4, direction: 'angle', customAngle: 90 }, 'right', DEFAULT_ANGLES)
+    expect(fromButton.vector.x).toBeCloseTo(fromAngle.vector.x)
+    expect(fromButton.vector.y).toBeCloseTo(fromAngle.vector.y)
+    expect(fromButton.vertical.direction).toBe('BU')
   })
 })

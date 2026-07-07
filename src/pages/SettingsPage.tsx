@@ -1,11 +1,13 @@
-import { ExternalLink, RotateCcw, Save } from 'lucide-react'
+import { ExternalLink, Info, RotateCcw, Save, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useApp } from '../context/AppContext'
 import { CREATOR_URL } from '../constants/app'
+import { UPDATE_HISTORY } from '../constants/updateHistory'
 import { angleForEye, normalizeAngle } from '../lib/prismMath'
 import type { BaseDirection, DecimalPlaces } from '../types'
 
 const directions: BaseDirection[] = ['BO', 'BU', 'BI', 'BD']
+const latestUpdate = UPDATE_HISTORY[0]
 
 export function SettingsPage() {
   const { settings, updateSettings, resetSettings } = useApp()
@@ -13,6 +15,7 @@ export function SettingsPage() {
   const [decimals, setDecimals] = useState<DecimalPlaces>(settings.decimals)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
 
   useEffect(() => {
     setAngles(Object.fromEntries(directions.map((key) => [key, String(settings.angles[key])])) as Record<BaseDirection, string>)
@@ -87,6 +90,10 @@ export function SettingsPage() {
         <button type="button" className="primary-button" onClick={save}><Save size={18} />保存する</button>
       </div>
       <footer className="settings-about">
+        <button type="button" className="settings-link-row update-history-button" onClick={() => setIsUpdateModalOpen(true)}>
+          <span className="settings-link-label"><Info aria-hidden="true" />アップデート情報</span>
+          <span className="settings-link-value">Ver. {latestUpdate.version}</span>
+        </button>
         <div className="creator-line">
           <span>作った人：</span>
           <a href={CREATOR_URL} target="_blank" rel="noreferrer">視能訓練士 ゆうまるす <ExternalLink aria-hidden="true" /></a>
@@ -101,6 +108,33 @@ export function SettingsPage() {
           </ul>
         </section>
       </footer>
+      {isUpdateModalOpen && (
+        <div className="modal-backdrop" role="presentation" onClick={() => setIsUpdateModalOpen(false)}>
+          <section className="update-history-modal" role="dialog" aria-modal="true" aria-labelledby="update-history-title" onClick={(event) => event.stopPropagation()}>
+            <header className="update-history-header">
+              <h2 id="update-history-title">アップデート履歴</h2>
+              <button type="button" className="modal-close-button" aria-label="アップデート履歴を閉じる" onClick={() => setIsUpdateModalOpen(false)}>
+                <X aria-hidden="true" />
+              </button>
+            </header>
+            <div className="update-history-list">
+              {UPDATE_HISTORY.map((entry) => (
+                <article className="update-history-entry" key={entry.version}>
+                  <h3>■ Ver. {entry.version}（{entry.date}）</h3>
+                  <ul>
+                    {entry.items.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+            <footer className="update-history-actions">
+              <button type="button" className="primary-button" onClick={() => setIsUpdateModalOpen(false)}>閉じる</button>
+            </footer>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

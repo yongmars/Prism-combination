@@ -1,13 +1,14 @@
-import { ArrowRightLeft, Calculator, RotateCcw } from 'lucide-react'
+import { ArrowRightLeft, Calculator, CornerUpRight, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { DecomposeCalculator } from '../components/DecomposeCalculator'
 import { PrismInputCard } from '../components/PrismInputCard'
 import { SplitCalculator } from '../components/SplitCalculator'
 import { useApp } from '../context/AppContext'
 import { calculatePrisms } from '../lib/prismMath'
 import type { DraftPrismInput, EyeSide, PrismInput } from '../types'
 
-type CalculatorMode = 'combine' | 'split'
+type CalculatorMode = 'combine' | 'decompose' | 'split'
 
 const initialInputs: [DraftPrismInput, DraftPrismInput] = [
   { magnitude: '', direction: 'BO', customAngle: '' },
@@ -56,11 +57,12 @@ export function CalculatorPage() {
   return (
     <div className="page calculator-page">
       <div className="calculator-mode-switch" role="tablist" aria-label="計算モード">
-        <button type="button" role="tab" aria-selected={mode === 'combine'} className={mode === 'combine' ? 'active' : ''} onClick={() => setMode('combine')}><Calculator />プリズム合成</button>
+        <button type="button" role="tab" aria-selected={mode === 'combine'} className={mode === 'combine' ? 'active' : ''} onClick={() => setMode('combine')}><Calculator />合成</button>
+        <button type="button" role="tab" aria-selected={mode === 'decompose'} className={mode === 'decompose' ? 'active' : ''} onClick={() => setMode('decompose')}><CornerUpRight />成分分解</button>
         <button type="button" role="tab" aria-selected={mode === 'split'} className={mode === 'split' ? 'active' : ''} onClick={() => setMode('split')}><ArrowRightLeft />左右分割</button>
       </div>
 
-      {mode === 'split' ? <SplitCalculator /> : <>
+      {mode === 'split' ? <SplitCalculator /> : mode === 'decompose' ? <DecomposeCalculator /> : <>
         <section className="eye-selector card" aria-labelledby="eye-title">
           <div><h2 id="eye-title">計算する眼</h2><p>左右眼でBI・BOの角度と表示が切り替わります</p></div>
           <div className="segmented" role="group" aria-label="計算する眼">

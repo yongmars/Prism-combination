@@ -14,7 +14,7 @@ const directions: BaseDirection[] = ['BU', 'BD', 'BI', 'BO']
 
 export function PrismInputCard({ index, value, eye, angles, error, onChange }: Props) {
   const currentAngle = value.direction === 'angle'
-    ? value.customAngle || '—'
+    ? value.customAngle || '-'
     : angleForEye(value.direction, eye, angles)
   const directionName = value.direction === 'angle'
     ? '任意角度'
@@ -25,17 +25,20 @@ export function PrismInputCard({ index, value, eye, angles, error, onChange }: P
     <section className={`prism-card prism-card--${accent}`} aria-labelledby={`prism-${index}-title`}>
       <h2 id={`prism-${index}-title`}>プリズム{index === 1 ? '①' : '②'}</h2>
       <label className="field-row">
-        <span>量（△）</span>
-        <input
-          inputMode="decimal"
-          type="number"
-          min="0"
-          step="any"
-          value={value.magnitude}
-          onChange={(event) => onChange({ ...value, magnitude: event.target.value })}
-          aria-describedby={error ? `prism-${index}-error` : undefined}
-          placeholder="例：5.0"
-        />
+        <span>プリズム量</span>
+        <span className="input-with-unit">
+          <input
+            inputMode="decimal"
+            type="number"
+            min="0"
+            step="any"
+            value={value.magnitude}
+            onChange={(event) => onChange({ ...value, magnitude: event.target.value })}
+            aria-describedby={error ? `prism-${index}-error` : undefined}
+            placeholder="例：3.0"
+          />
+          <b>△</b>
+        </span>
       </label>
       <fieldset>
         <legend>基底方向</legend>

@@ -1,11 +1,12 @@
 import { ArrowLeft } from 'lucide-react'
 import { useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
+import { DecomposeVectorDiagram } from '../components/DecomposeVectorDiagram'
 import { SplitVectorDiagrams } from '../components/SplitVectorDiagram'
 import { VectorDiagram } from '../components/VectorDiagram'
 import { useApp } from '../context/AppContext'
 import { DIRECTION_NAMES, formatNumber } from '../lib/prismMath'
-import type { CalculationRecord, SplitCalculationRecord, SplitEyePrescription } from '../types'
+import type { CalculationRecord, DecomposeCalculationRecord, PrismComponentPart, SplitCalculationRecord, SplitEyePrescription } from '../types'
 
 type DetailTab = 'vector' | 'components' | 'formula'
 
@@ -26,6 +27,8 @@ export function DetailsPage() {
       </div>
       {current.kind === 'split'
         ? <SplitDetails current={current} decimals={d} tab={tab} />
+        : current.kind === 'decompose'
+          ? <DecomposeDetails current={current} decimals={d} tab={tab} />
         : <CombineDetails current={current} decimals={d} tab={tab} />}
     </div>
   )
@@ -40,6 +43,29 @@ function CombineDetails({ current, decimals: d, tab }: { current: CalculationRec
       <div className="formula-card total-formula"><h3>合成</h3><p>x合計 = {formatNumber(current.totalX, d, true)}</p><p>y合計 = {formatNumber(current.totalY, d, true)}</p><p>P = √(x² + y²) = <strong>{formatNumber(current.resultMagnitude, d)}△</strong></p><p>θ = atan2(y, x) = <strong>{current.resultAngle === null ? '方向なし' : `${formatNumber(current.resultAngle, d)}°`}</strong></p></div>
     </section>}
     {tab === 'vector' && <section className="card compact-components"><h2>成分値</h2><CombineComponentTable current={current} decimals={d} /></section>}
+  </>
+}
+
+function componentText(part: PrismComponentPart, decimals: number) {
+  return part.direction ? `${formatNumber(part.magnitude, decimals)}△ ${part.direction}（${DIRECTION_NAMES[part.direction].ja}）` : `${formatNumber(0, decimals)}△`
+}
+
+function DecomposeComponentTable({ current, decimals }: { current: DecomposeCalculationRecord; decimals: number }) {
+  return <div className="table-scroll"><table><thead><tr><th /><th>成分値</th><th>処方表示</th></tr></thead><tbody>
+    <tr><th>水平成分（x）</th><td>{formatNumber(current.vector.x, decimals, true)}</td><td>{componentText(current.horizontal, decimals)}</td></tr>
+    <tr><th>垂直成分（y）</th><td>{formatNumber(current.vector.y, decimals, true)}</td><td>{componentText(current.vertical, decimals)}</td></tr>
+  </tbody></table></div>
+}
+
+function DecomposeDetails({ current, decimals: d, tab }: { current: DecomposeCalculationRecord; decimals: number; tab: DetailTab }) {
+  return <>
+    {tab === 'vector' && <section className="card"><DecomposeVectorDiagram record={current} decimals={d} /></section>}
+    {tab === 'components' && <section className="card detail-section"><h2>水平・垂直成分</h2><DecomposeComponentTable current={current} decimals={d} /><div className="split-notation"><p><strong>水平成分</strong><span>{componentText(current.horizontal, d)}</span></p><p><strong>垂直成分</strong><span>{componentText(current.vertical, d)}</span></p></div></section>}
+    {tab === 'formula' && <section className="card detail-section formula-section"><h2>成分分解の計算過程</h2>
+      <div className="formula-card"><h3>入力された合成プリズム</h3><p>P = {formatNumber(current.input.magnitude, d)}△</p><p>θ = {formatNumber(current.vector.angle, d)}°</p></div>
+      <div className="formula-card total-formula"><h3>水平・垂直成分</h3><p>x = {formatNumber(current.input.magnitude, d)} × cos({formatNumber(current.vector.angle, d)}°) = <strong>{formatNumber(current.vector.x, d, true)}</strong></p><p>y = {formatNumber(current.input.magnitude, d)} × sin({formatNumber(current.vector.angle, d)}°) = <strong>{formatNumber(current.vector.y, d, true)}</strong></p><p>水平 = <strong>{componentText(current.horizontal, d)}</strong></p><p>垂直 = <strong>{componentText(current.vertical, d)}</strong></p></div>
+    </section>}
+    {tab === 'vector' && <section className="card compact-components"><h2>水平・垂直成分</h2><DecomposeComponentTable current={current} decimals={d} /></section>}
   </>
 }
 

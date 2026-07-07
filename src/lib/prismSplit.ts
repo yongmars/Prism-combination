@@ -1,44 +1,13 @@
 import type {
   AngleSettings,
-  BaseDirection,
   EyeSide,
-  PrismComponentPart,
   PrismSplitResult,
   SplitCalculationRecord,
   SplitEyePrescription,
 } from '../types'
-import { angleForEye, circularDistance, normalizeAngle, toVector } from './prismMath'
+import { componentFromAxisValue, normalizeAngle, toVector } from './prismMath'
 
 const EPSILON = 1e-10
-
-function closestDirection(
-  componentAngle: number,
-  candidates: [BaseDirection, BaseDirection],
-  eye: EyeSide,
-  settings: AngleSettings,
-): BaseDirection {
-  return candidates.reduce((best, direction) =>
-    circularDistance(componentAngle, angleForEye(direction, eye, settings)) <
-    circularDistance(componentAngle, angleForEye(best, eye, settings))
-      ? direction
-      : best,
-  )
-}
-
-function component(
-  value: number,
-  positiveAngle: number,
-  negativeAngle: number,
-  candidates: [BaseDirection, BaseDirection],
-  eye: EyeSide,
-  settings: AngleSettings,
-): PrismComponentPart {
-  if (Math.abs(value) < EPSILON) return { magnitude: 0, direction: null }
-  return {
-    magnitude: Math.abs(value),
-    direction: closestDirection(value > 0 ? positiveAngle : negativeAngle, candidates, eye, settings),
-  }
-}
 
 function makePrescription(
   eye: EyeSide,
@@ -54,8 +23,8 @@ function makePrescription(
     magnitude: normalizedMagnitude,
     angle: normalizedMagnitude === 0 ? null : normalizedAngle,
     vector,
-    horizontal: component(vector.x, 0, 180, ['BO', 'BI'], eye, settings),
-    vertical: component(vector.y, 90, 270, ['BU', 'BD'], eye, settings),
+    horizontal: componentFromAxisValue(vector.x, 0, 180, ['BO', 'BI'], eye, settings),
+    vertical: componentFromAxisValue(vector.y, 90, 270, ['BU', 'BD'], eye, settings),
   }
 }
 
